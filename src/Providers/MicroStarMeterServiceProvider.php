@@ -1,4 +1,7 @@
 <?php
+
+namespace Inensus\MicroStarMeter\Providers;
+
 use Illuminate\Support\ServiceProvider;
 use Inensus\MicroStarMeter\Console\Commands\InstallPackage;
 use Inensus\MicroStarMeter\Console\Commands\UpdatePackage;
@@ -19,7 +22,7 @@ class MicroStarMeterServiceProvider extends ServiceProvider
             $this->publishConfigFiles();
             $this->publishVueFiles();
             $this->publishMigrations($filesystem);
-            $this->commands([InstallPackage::class,UpdatePackage::class]);
+            $this->commands([InstallPackage::class, UpdatePackage::class]);
         }
     }
 
@@ -28,7 +31,7 @@ class MicroStarMeterServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../../config/micro-star-meter.php', 'micro-star-meter');
         $this->app->register(EventServiceProvider::class);
         $this->app->register(ObserverServiceProvider::class);
-        $this->app->bind('MicroStarMeterApi',MicroStarMeterApi::class);
+        $this->app->bind('MicroStarMeterApi', MicroStarMeterApi::class);
     }
 
     public function publishConfigFiles()
@@ -61,7 +64,8 @@ class MicroStarMeterServiceProvider extends ServiceProvider
             ->flatMap(function ($path) use ($filesystem) {
                 if (count($filesystem->glob($path . '*_create_micro_star_tables.php'))) {
                     $file = $filesystem->glob($path . '*_create_micro_star_tables.php')[0];
-                    file_put_contents($file, file_get_contents(__DIR__ . '/../../database/migrations/create_micro_star_tables.php.stub'));
+                    file_put_contents($file,
+                        file_get_contents(__DIR__ . '/../../database/migrations/create_micro_star_tables.php.stub'));
                 }
                 return $filesystem->glob($path . '*_create_micro_star_tables.php');
             })->push($this->app->databasePath() . "/migrations/{$timestamp}_create_micro_star_tables.php")
